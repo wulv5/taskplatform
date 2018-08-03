@@ -13,32 +13,24 @@ sql.createuser = function(username, password, body) {
         e({result: '用户已经存在', err});
         return
       }
-      /*Promise.all([
+      Promise.all([
         model.password.create({password: util.verifypassword(password)}),
         model.usertaskinfo.create({})
       ]).then((result) => {
         model.user.create({
           username: username,
           password: result[0]._id,
+          workinfo: {
+            department: body.department,
+            jobnum: body.jobnum
+          },
           usertaskinfo: result[1]._id
+        }).then((user) => {
+          next({result: '注册成功', user})
+        }).catch((err) => {
+          console.log('createuser', err);
+          e({result: '服务器错误', err})
         })
-      });*/
-      model.password.create({
-        password: util.verifypassword(password)
-      }, function (err, result) {
-        model.usertaskinfo.create({}, function (err, usertaskinfo) {
-          model.user.create({
-            username: username,
-            workinfo: {
-              department: body.department,
-              jobnum: body.jobnum
-            },
-            password: result._id,
-            usertaskinfo: usertaskinfo._id
-          }, function (err, user) {
-            next({result: '注册成功', user, err})
-          })
-        });
       });
     });
   })
@@ -435,18 +427,15 @@ sql.admin.deltask = function (req, res) {
       res.send({code: 1, data: '不能删除别人的任务'});
       return
     }
-    // TODO: 待优化
     model.task.remove({_id: req.body.id}, (err, result) => {
       res.send({code: 0, data: '删除成功'});
-      model.usertaskinfo.find().exec(function (err, result) {
-        result.forEach((val) => {
-          model.usertaskinfo.update({_id: val._id}, {$pull: {
-              havePublished: req.body.id,
-              publishUnderway: req.body.id,
-              finished: req.body.id
-            }}, function () {});
-        });
-      });
+      model.usertaskinfo.update({
+          $or: [{havePublished: req.body.id}, {publishUnderway: req.body.id}, {finished: req.body.id}]
+        }, {$pull: {
+          havePublished: req.body.id,
+          publishUnderway: req.body.id,
+          finished: req.body.id
+        }}, { multi: true }/*更新多个*/, function () {});
     })
   });
 };
