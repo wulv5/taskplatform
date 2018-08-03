@@ -1,0 +1,142 @@
+<% include nav.ejs %>
+
+<div class="layui-body">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>全部任务</legend>
+    </fieldset>
+
+
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">搜索任务</label>
+                <div class="layui-input-inline">
+                    <div id="userallview"></div>
+                </div>
+                <div class="layui-form-mid layui-word-aux">搜索结果是某人已经完成的任务</div>
+            </div>
+        </div>
+    </form>
+    <script id="userall" type="text/html">
+        <select name="modules" lay-verify="required" lay-search="" lay-filter="searchuser">
+            <option value="">直接选择或搜索选择</option>
+            {{#  layui.each(d.list, function(index, item){ }}
+            <option value="{{ item.usertaskinfo }}">{{ item.username }}</option>
+            {{# }); }}
+        </select>
+    </script>
+
+    <table class="layui-table" lay-skin="line" id="parse-table-demo" lay-filter="parse-table-demo"></table>
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="show">查看详情</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除任务</a>
+    </script>
+
+</div>
+
+</div>
+<script src="/layui/layui.js"></script>
+<script>
+  layui.use(['element', 'form', 'table', 'layer', 'util', 'laytpl'], function () {
+    var table = layui.table
+      ,form = layui.form,
+      layer = layui.layer,
+      laytpl = layui.laytpl,
+      $ = layui.$;
+
+    table.on('tool(parse-table-demo)', function(obj){
+      var data = obj.data;
+      console.log(data);
+      if(obj.event === 'del'){
+        layer.confirm('真的删除么', function(index){
+          layui.$.ajax({
+            url: '/admin/deltask',
+            method: 'post',
+            data: {
+              id: data._id
+            },
+            success: function (res) {
+              layer.close(index);
+              layer.alert(res.data)
+              if (res.code === 0) {
+                obj.del();
+              }
+            }
+          })
+        });
+      } else if (obj.event === 'show') {
+        window.open('/task/' + data._id);
+      }
+    });
+
+    table.render({
+      elem: '#parse-table-demo'
+      ,url: '/admin/querytaskall'
+      ,method: 'post'
+      ,page: true
+      ,limit: 10
+      ,loading: true
+      ,skin: 'line'
+      ,cols: [[
+        {field: 'publishName', title: '发布人', width: 115, align: 'center', templet: function (d) {
+            return d.publishName.username
+          }}
+        ,{field: 'publishTitle', title: '主题', align: 'center'}
+        ,{field: 'publishTime', title: '发布时间', width: 160, align: 'center', sort: true, templet: function (d) {
+            return layui.util.toDateString(d.publishTime)
+          }}
+        /*,{field: 'receiveName', title: '接取人', width: 115, align: 'center', templet: function (d) {
+            return d.receiveName && d.receiveName.username || '暂无'
+          }}*/
+        ,{field: 'receiveTime', title: '接取日期', width: 160, align: 'center', sort: true, templet: function (d) {
+            return d.receiveTime && layui.util.toDateString(d.receiveTime) || '暂无'
+          }}
+          /*,{field: 'finishTime', title: '完成日期', width: 160, align: 'center', sort: true, templet: function (d) {
+            return d.finishTime && layui.util.toDateString(d.finishTime) || '暂无'
+          }}*/
+        ,{field: 'publishFinishTime', title: '截止日期', width: 160, align: 'center'}
+        ,{field: 'finished', title: '是否完成', width: 100, align: 'center', sort: true, templet: function (d) {
+            if(d.finished) {
+              return '<span style="color: red">已完成</span>'
+            } else if (d.receiveName.length > 0) {
+              return '正在进行中'
+            }
+            return ''
+          }}
+        // ,{field: 'published', title: '是否发布', width: 90, align: 'center'}
+        // ,{field: 'publishHard', title: '难度', width: 64, sort: true, align: 'center'}
+        ,{field: 'finishBonus', title: '奖金(元)', width: 89, align: 'center', sort: true, templet: function (d) {
+            return d.finishBonus || ''
+        }}
+        ,{float: 'right', width:180, toolbar: '#barDemo', align:'center'}
+      ]]
+    })
+
+    $.ajax({
+      url: '/admin/queryuserall',
+      method: 'post',
+      success: function (res) {
+        console.log(res.data);
+        const data = { //数据
+          list: res.data
+        };
+        const getTpl = userall.innerHTML
+          , view = document.getElementById('userallview');
+        laytpl(getTpl).render(data, function(html){
+          view.innerHTML = html;
+          form.render();
+          form.on('select(searchuser)', function(data){
+            // console.log(data.value); 得到被选中的值
+            table.reload('parse-table-demo', {
+              url: '/query/finished',
+              where: {_id: data.value}
+            });
+          });
+        });
+      }
+    })
+  })
+</script>
+</body>
+</html>

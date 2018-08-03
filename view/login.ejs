@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登陆</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <style>
+        .layui-main{
+            width: 350px;
+            margin: 200px auto 0;
+            padding:25px;
+            background-color: rgba(10,10,10,.1);
+            border-radius: 7px;
+            z-index: 2;
+        }
+
+    </style>
+</head>
+<body>
+
+<div style="position: fixed;bottom: 0;right: 0;min-width: 100%;min-height: 100%;filter: blur(10px);background: rgba(255,255,255,0.8);z-index: -1;">
+    <video style="position: fixed;bottom: 0;right: 0;min-width: 100%;min-height: 100%;z-index: -1"
+           muted="autoplay" autoplay="" loop="" src="/layui/home-bg.mp4"></video>
+</div>
+<div style="position: fixed;bottom: 0;right: 0;min-width: 100%;min-height: 100%;"></div>
+<form style="" class="layui-form layui-form-pane layui-main" action="/login" method="post">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;text-align: center;">
+        <legend>登陆</legend>
+    </fieldset>
+    <div class="layui-form-item">
+        <label class="layui-form-label">用户名</label>
+        <div class="layui-input-block" align="center">
+            <input type="text" name="username" required lay-verify="required" placeholder="请输入姓名" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">密码框</label>
+        <div class="layui-input-block">
+            <input type="password" name="password" required lay-verify="required|pass" placeholder="请输入密码" autocomplete="off"
+                   class="layui-input">
+        </div>
+        <!--<div class="layui-form-mid layui-word-aux">辅助文字</div>-->
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+<script src="/layui/layui.js"></script>
+<script>
+    layui.use(['element', 'form'], function () {
+      layui.form.on('submit(formDemo)', function (data) {
+        layui.$.ajax({
+          url: '/login',
+          method: 'post',
+          data: data.field,
+          success(res) {
+            layer.alert(res.data);
+            res.code === 0 && (location.href = '/');
+          }
+        })
+        return false;
+      });
+      layui.form.verify({
+        pass: [
+          /^[\S]{6,12}$/
+          ,'密码必须6到12位，且不能出现空格'
+        ]
+      })
+    })
+</script>
+</body>
+</html>
+<% include console.ejs %>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>后台</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">赏金系统后台</div>
+        <!--<ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href=""></a></li>
+            <li class="layui-nav-item"><a href=""></a></li>
+            <li class="layui-nav-item"><a href=""></a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;"></a>
+                <dl class="layui-nav-child">
+                    <dd><a href=""></a></dd>
+                    <dd><a href=""></a></dd>
+                    <dd><a href=""></a></dd>
+                </dl>
+            </li>
+        </ul>-->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="/">
+                    返回首页
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">用户管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/admin/userall"><i class="layui-icon layui-icon-username"></i> 用户总览</a></dd>
+                        <dd><a href="/admin/resetpassword"><i class="layui-icon layui-icon-password"></i> 重置密码</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item  layui-nav-itemed">
+                    <a href="javascript:;">任务管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/admin/taskall"><i class="layui-icon layui-icon-file"></i> 任务总览</a></dd>
+                        <dd><a href="/admin/addtask"><i class="layui-icon layui-icon-release"></i> 发布任务</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>

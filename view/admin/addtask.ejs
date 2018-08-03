@@ -1,0 +1,113 @@
+<% include nav.ejs %>
+
+<div class="layui-body">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+        <legend>发布任务</legend>
+    </fieldset>
+
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="publishTitle" required lay-verify="required" placeholder="请输入标题"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">任务难度</label>
+                <div class="layui-input-inline">
+                    <div id="rate1"></div>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">截止日期</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" required lay-verify="required" name="publishFinishTime" id="publishFinishTime">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">奖金</label>
+                <div class="layui-input-inline">
+                    <input type="number" name="finishBonus" required lay-verify="required" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux"></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">接取人数</label>
+                <div class="layui-input-inline">
+                    <input type="number" name="receiveNum" required lay-verify="required" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux"></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">任务说明 :
+                </label>
+            <div class="layui-input-block">
+                <textarea class="layui-textarea" id="LAY_demo1" style="display: none"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">发布任务</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+</div>
+<script src="/layui/layui.js"></script>
+<script>
+  layui.use(['element', 'layedit', 'form', 'laydate', 'rate'], function () {
+    let layedit = layui.layedit,
+      form = layui.form
+      , laydate = layui.laydate,
+      rate = layui.rate,
+      publishHard;
+    const index = layedit.build('LAY_demo1', {
+      uploadImage: {url: '/admin/addtask/upload', type: 'post'}
+    });
+    laydate.render({
+      elem: '#date1'
+    });
+    rate.render({
+      elem: '#rate1'
+      ,choose: function(value){
+        publishHard = value
+      }
+    })
+    laydate.render({
+      elem: '#publishFinishTime'
+    });
+    form.on('submit(formDemo)', function (data) {
+      data.field.publishContent = layedit.getContent(index);
+      // data.field.publishMintext = layedit.getText(index).substring(0, 120);
+      data.field.publishHard = publishHard || 0;
+      console.log(data.field);
+      delete data.field.file;
+      layui.$.ajax({
+        url: '/admin/addtask',
+        method: 'post',
+        data: data.field,
+        success: function (res) {
+          layer.alert(res.data, function (index) {
+            res.code === 0 && (location.href = '/admin/addtask');
+            layer.close(index)
+          });
+        }
+      });
+      return false;
+    });
+  })
+</script>
+</body>
+</html>

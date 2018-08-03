@@ -1,0 +1,137 @@
+<% include header.ejs %>
+
+<div class="layui-main" style="padding-top: 15px;">
+
+    <div id="view" style="padding-bottom: 100px;"></div>
+
+    <script id="details" type="text/html">
+        <h1>{{ d.list.publishTitle }}</h1>
+        <div class="layui-text layui-row" style="padding-top: 15px;">
+            <div class="layui-col-md1">发布人: {{ d.list.publishName.username }}</div>
+            <div>发布时间: {{ layui.util.toDateString(d.list.publishTime) }}</div>
+        </div>
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+            <legend>任务详情</legend>
+        </fieldset>
+        <div style="padding-top: 15px;">{{d.list.publishContent}}</div>
+        <div style="padding-top: 15px;">
+            已接取人数: {{ d.list.receiveName.length || 0 }} 人 &nbsp;&nbsp;
+            最高接取人数: {{ d.list.receiveNum || '' }} 人 &nbsp;&nbsp;
+            任务限时: {{ d.list.publishFinishTime }} 之前 &nbsp;&nbsp;
+            任务难度: <div id="publishHard"></div> &nbsp;&nbsp;
+            任务奖金: {{ d.list.finishBonus || '' }} 元 &nbsp;&nbsp;
+        </div>
+        <div style="padding-top: 15px;">
+            {{# if (d.published || d.list.published || d.list.finished) { }}
+            <button class="layui-btn layui-btn-normal layui-btn-disabled">不能接取</button>
+            {{# } else { }}
+            <button class="layui-btn layui-btn-normal" data-method="receive">立即接取</button>
+            {{# } }}
+        </div>
+        {{# if (d.list.receiveName.length > 0) { }}
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+            <legend>接取人</legend>
+        </fieldset>
+        <!--<div style="padding-top: 15px;">接取时间 (从第一个人开始算): {{ layui.util.toDateString(d.list.receiveTime) }}</div>-->
+        <div style="padding-top: 15px;" class="layui-row">
+            {{# layui.each(d.list.receiveName, function(index, item){ }}
+            <div class="layui-col-md2">{{index+1}}. 用户名:  {{ item.userinfo.username }}</div>
+            {{# }) }}
+        </div>
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+            <legend>完成详情</legend>
+        </fieldset>
+        {{# layui.each(d.list.receiveName, function(index, item){ }}
+        {{# if (item.finished) { }}
+        <div class="layui-card">
+            <div class="layui-card-header">完成人: {{ item.userinfo.workinfo && item.userinfo.workinfo.department || '' }} - {{ item.userinfo.username }} &nbsp;&nbsp;&nbsp;&nbsp; 完成时间: {{ layui.util.toDateString(item.finishTime) }}</div>
+            <div class="layui-card-body">
+                {{ item.finishedMsg }}
+            </div>
+            {{# if(d.list.publishName._id === d.userdata && !item.finishEvaluate){ }}
+                <div class="layui-card-body">
+                    <form class="layui-form" action="" lay-data="item">
+                        <input style="display: none;" hidden name="_id" type="text" value="{{ item._id }}">
+                        <input style="display: none;" hidden name="num" type="text" value="{{ index }}">
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">任务评价 :</label>
+                            <div class="layui-input-block">
+                                <textarea class="layui-textarea" id="LAY_demo{{ index }}" style="display: none"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="formDemo">提交评价</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            {{# } else if (item.finishEvaluate) { }}
+                <div class="layui-card-body">
+                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+                        <legend>任务评价</legend>
+                    </fieldset>
+                    <div style="padding-top: 15px;">
+                        {{ item.finishEvaluate || '' }}
+                    </div>
+                </div>
+            {{# } }}
+        </div>
+        {{# } }}
+        {{# }) }}
+        {{# if (!d.finishedMsg.finished) { }}
+        <div style="padding-top: 70px;">
+            <form class="layui-form" action="">
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">完成描述 :</label>
+                    <div class="layui-input-block">
+                        <textarea class="layui-textarea" id="finish_edit" style="display: none"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="finishForm">立即完成提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {{# } }}
+
+
+        {{# } }}
+
+        {{# if(d.list.publishName._id === d.userdata && !d.list.finishEvaluate){ }}
+        <!--<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+            <legend>任务评价</legend>
+        </fieldset>
+        <form class="layui-form" action="">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">任务评价 :</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" id="LAY_demo1" style="display: none"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">提交评价</button>
+                </div>
+            </div>
+        </form>-->
+        {{# } else if (d.list.finishEvaluate) { }}
+        <!--<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+            <legend>任务评价</legend>
+        </fieldset>
+        <div style="padding-top: 15px;">
+            {{ d.list.finishEvaluate || '' }}
+        </div>-->
+        {{# } }}
+
+    </script>
+</div>
+
+
+<script src="/layui/layui.js"></script>
+<script src="/static/js/details.js"></script>
+</body>
+</html>
+<% include console.ejs %>
