@@ -348,7 +348,7 @@ sql.admin.deluser = function (req, res) {
       model.usertaskinfo.remove({_id: result.usertaskinfo}, function(){});
       model.password.remove({_id: result.password}, function(){});
       model.task.update({'receiveName.userinfo': req.body.id},
-        {$pull: {'receiveName': {userinfo: req.body.id}}}, function(){});
+        {$pull: {'receiveName': {userinfo: req.body.id}}}, { multi: true }, function(){});
     })
   });
 };
