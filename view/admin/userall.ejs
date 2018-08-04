@@ -4,6 +4,13 @@
     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
         <legend>全部用户</legend>
     </fieldset>
+    <!--<div class="demoTable">
+      搜索用户名：
+      <div class="layui-inline">
+        <input class="layui-input" name="username" id="demoReload" autocomplete="off">
+      </div>
+      <button class="layui-btn" data-type="reload">搜索</button>
+    </div>-->
     <script type="text/html" id="usedTpl">
       <input type="checkbox" name="used" value="{{d._id}}" lay-skin="switch" lay-text="可用|不可用" lay-filter="usedDemo" {{ d.used == true ? 'checked' : '' }}>
     </script>
@@ -11,15 +18,15 @@
       <thead>
       <tr>
         <th lay-data="{field:'username', width:100, align: 'center'}">用户名</th>
-        <th lay-data="{field:'level', width:110, sort: true, fixed: 'right', align: 'center'}">账号级别</th>
-        <th lay-data="{field:'used', width:115, fixed: 'right', align: 'center', templet: '#usedTpl'}">账号是否可用</th>
-        <th lay-data="{field:'workinfo', width:80, align: 'center', fixed: 'right', templet: function(d) {
+        <th lay-data="{field:'workinfo', width:90, align: 'center', fixed: 'right', templet: function(d) {
           return d.workinfo && d.workinfo.department || ''
         }}">部门</th>
-        <th lay-data="{field:'workinfo', width:80, align: 'center', fixed: 'right', templet: function(d) {
+        <th lay-data="{field:'workinfo', width:90, align: 'center', fixed: 'right', templet: function(d) {
           return d.workinfo && d.workinfo.jobnum || ''
         }}">工号</th>
-        <th lay-data="{float: 'right', width:178, align:'center', toolbar: '#barDemo'}"></th>
+        <th lay-data="{field:'level', width:110, sort: true, fixed: 'right', align: 'center'}">账号级别</th>
+        <th lay-data="{field:'used', width:115, fixed: 'right', align: 'center', templet: '#usedTpl'}">账号是否可用</th>
+        <th lay-data="{float: 'right', width:178, align:'center', toolbar: '#barDemo'}">操作</th>
       </tr>
       </thead>
     </table>
@@ -37,7 +44,8 @@
   layui.use(['element', 'form', 'table', 'layer'], function () {
     var table = layui.table
       ,form = layui.form,
-      layer = layui.layer;
+      layer = layui.layer,
+      $ = layui.$;
 
     //监听工具条
     table.on('tool(demo)', function(obj){
@@ -98,7 +106,7 @@
               level: datat.field.level
             },
             success: function (res) {
-              console.log(res.data);
+              // console.log(res.data);
               layer.alert(res.data, function () {
                 window.location.reload()
               })
@@ -123,6 +131,23 @@
           res.code === 1 && window.location.reload()
         }
       })
+    });
+    active = {
+      reload: function(){
+        var demoReload = $('#demoReload');
+        table.reload('idTest', {
+          page: {curr: 1}
+          ,method: 'post'
+          ,where: {
+            username: demoReload.val()
+          }
+        });
+      }
+    };
+    $('.demoTable .layui-btn').on('click', function(){
+      console.log(1);
+      var type = $(this).data('type');
+      active[type] ? active[type].call(this) : '';
     });
   })
 

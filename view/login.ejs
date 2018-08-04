@@ -16,14 +16,23 @@
             border-radius: 7px;
             z-index: 2;
         }
-
+        .bg {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.8);
+            background-image: url('/layui/bg.png');
+            background-size: cover;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
 
-<div style="position: fixed;bottom: 0;right: 0;min-width: 100%;min-height: 100%;filter: blur(10px);background: rgba(255,255,255,0.8);z-index: -1;">
-    <video style="position: fixed;bottom: 0;right: 0;min-width: 100%;min-height: 100%;z-index: -1"
-           muted="autoplay" autoplay="" loop="" src="/layui/home-bg.mp4"></video>
+<div class="bg">
 </div>
 <div style="position: fixed;bottom: 0;right: 0;min-width: 100%;min-height: 100%;"></div>
 <form style="" class="layui-form layui-form-pane layui-main" action="/login" method="post">
@@ -45,12 +54,9 @@
         </div>
         <!--<div class="layui-form-mid layui-word-aux">辅助文字</div>-->
     </div>
-
-    <div class="layui-form-item">
-        <div class="layui-input-block">
-            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
-            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-        </div>
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-normal layui-btn-fluid" lay-submit lay-filter="formDemo">立即登陆</button>
+        <a href="/" class="layui-btn layui-btn-primary layui-btn-fluid">返回首页</a>
     </div>
 </form>
 

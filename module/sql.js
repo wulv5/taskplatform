@@ -2,6 +2,11 @@ const model = require('./schema'),
   util = require('./util');
 
 const sql = {};
+/*******************************
+ *
+ * emmmmm
+ *
+ *******************************/
 sql.createuser = function(username, password, body) {
   return new Promise((next, e) => {
     model.user.findOne({username: username}, function (err, result) {
@@ -91,7 +96,11 @@ sql.querytaskbyid = function (req, res) {
   })
 };
 
-// 查询 (全部) 所有任务/可以接取的任务/不可接取的任务
+/*******************************
+*
+* 查询 (全部) 所有任务/可以接取的任务/不可接取的任务
+*
+*******************************/
 sql.querytaskall = function (req, res) {
   Promise.all([
     model.task.find().skip((req.body.page - 1) * req.body.limit).limit(Number(req.body.limit)).populate('publishName receiveName', 'username').sort({'_id': -1}),
@@ -123,9 +132,13 @@ sql.querytaskreceived = function (req, res) {
   });
 };
 
-// 查询 (自己) 已发布/正在进行/已完成任务
+/*******************************
+*
+* 查询 (自己) 已发布/正在进行/已完成任务
+*
+*******************************/
 sql.queryhavePublished = function (req, res) {
-  const id = req.body._id || req.session.userdata.usertaskinfo;
+  let id = req.body._id || req.session.userdata.usertaskinfo;
   model.usertaskinfo.findOne({_id: id}).populate({
     path: 'havePublished', options: {
       sort: {_id: -1},
@@ -137,13 +150,13 @@ sql.queryhavePublished = function (req, res) {
       select: 'username'
     }
   }).then((result) => {
-    res.send({code: 0, data: result.havePublished, count: result.populated('havePublished').length})
+    res.send({code: 0, data: result.havePublished, count: result.populated('havePublished').length});
   }).catch((err) => {
     res.send({code: 1, err, data: '服务器错误'});
   });
 };
 sql.querypublishUnderway = function (req, res) {
-  const id = req.body._id || req.session.userdata.usertaskinfo;
+  let id = req.body._id || req.session.userdata.usertaskinfo;
   model.usertaskinfo.findOne({_id: id}).populate({
     path: 'publishUnderway', options: {
       sort: {_id: -1},
@@ -155,13 +168,13 @@ sql.querypublishUnderway = function (req, res) {
       select: 'username'
     }
   }).then((result) => {
-    res.send({code: 0, data: result.publishUnderway, count: result.populated('publishUnderway').length})
+    res.send({code: 0, data: result.publishUnderway, count: result.populated('publishUnderway').length});
   }).catch((err) => {
     res.send({code: 1, err, data: '服务器错误'});
   });
 };
 sql.queryfinished = function (req, res) {
-  const id = req.body._id || req.session.userdata.usertaskinfo;
+  let id = req.body._id || req.session.userdata.usertaskinfo;
   model.usertaskinfo.findOne({_id: id}).populate({
     path: 'finished', options: {
       sort: {_id: -1},
@@ -174,13 +187,17 @@ sql.queryfinished = function (req, res) {
       select: 'username'
     }
   }).then((result) => {
-    res.send({code: 0, data: result.finished, count: result.populated('finished').length})
+    res.send({code: 0, data: result.finished, count: result.populated('finished').length});
   }).catch((err) => {
     res.send({code: 1, err, data: '服务器错误'});
   });
 };
 
-// 接取任务/完成任务/任务评价
+/*******************************
+*
+* 接取任务/完成任务/任务评价
+*
+********************************/
 sql.taskreceive = function (req, res) {
   model.task.findOne({_id: req.body.id}, function (err, result) {
     if (err) {
@@ -195,7 +212,7 @@ sql.taskreceive = function (req, res) {
       res.send({code: 1, data: '任务已经完成,不能接取已经完成的任务'});
       return
     }
-    const finishedMsg = result.receiveName.findIndex(function (val) {
+    let finishedMsg = result.receiveName.findIndex(function (val) {
       return String(val.userinfo) === req.session.userdata._id
     });
     if (!(finishedMsg === -1)) {
@@ -203,7 +220,7 @@ sql.taskreceive = function (req, res) {
       return
     }
     model.usertaskinfo.findOne({_id: req.session.userdata.usertaskinfo}, function (err, result1) {
-      const em = result1.havePublished.filter((val) => {
+      let em = result1.havePublished.filter((val) => {
         return String(val) === req.body.id;
       }) || 1;
       if (em.length === 1) {
@@ -212,20 +229,17 @@ sql.taskreceive = function (req, res) {
       }
       Promise.all([
         model.task.update({_id: req.body.id}, {
-          $set: {
-            receiveTime: new Date()},
+          $set: {receiveTime: new Date()},
           // $inc: {receiveNum: 1},
           $push: {receiveName: {userinfo: req.session.userdata._id}
           }
         }),
         model.usertaskinfo.update({_id: req.session.userdata.usertaskinfo}, {$push: {publishUnderway: req.body.id}})
-      ]).then((result) => {
+      ]).then((result1) => {
         res.send({code: 0, data: '接取成功'});
-        if (result.receiveName.length >= result.receiveNum) {
-          model.task.update({id: req.body.id}, {$set: {published: true}}, function(){})
-        }
       }).catch((err) => {
-
+        console.log('taskreceive', err);
+        res.send({code: 1, data: '服务器错误'});
       });
     });
   })
@@ -236,7 +250,7 @@ sql.taskfinished = function (req, res) {
       res.send({code: 1, data: '服务器错误'});
       return
     }
-    const finishedMsg = result.receiveName.findIndex(function (val) {
+    let finishedMsg = result.receiveName.findIndex(function (val) {
       return String(val.userinfo) === req.session.userdata._id
     });
     if (finishedMsg === -1) {
@@ -247,16 +261,19 @@ sql.taskfinished = function (req, res) {
       res.send({code: 1, data: '已经提交过'});
       return
     }
-    model.usertaskinfo.findOne({_id: req.session.userdata.usertaskinfo}, function (err, result1) {
+    Promise.all([
       model.task.update({_id: req.body.id}, {$set: {
           ['receiveName.' + finishedMsg + '.finished']: true,
           ['receiveName.' + finishedMsg + '.finishTime']: new Date(),
           ['receiveName.' + finishedMsg + '.finishedMsg']: req.body.finishedMsg
-        }}).then(() => {
-        res.send({code: 0, data: '提交成功'});
-        model.usertaskinfo.update({_id: req.session.userdata.usertaskinfo},
-          {$push: {finished: req.body.id}, $pull: {publishUnderway: req.body.id}}, function () {});
-      })
+        }}),
+      model.usertaskinfo.update({_id: req.session.userdata.usertaskinfo},
+        {$push: {finished: req.body.id}, $pull: {publishUnderway: req.body.id}})
+    ]).then(() => {
+      res.send({code: 0, data: '提交成功'});
+    }).catch((err) => {
+      console.log('taskfinished', err);
+      res.send({code: 1, data: '服务器错误'});
     });
   })
 };
@@ -266,7 +283,7 @@ sql.taskfinishEvaluate = function (req, res) {
       res.send({code: 1, data: '服务器错误'});
       return
     }
-    const userMsg = result.receiveName.findIndex(function (val) {
+    let userMsg = result.receiveName.findIndex(function (val) {
       return String(val._id) === req.body.user_id
     });
     if (result.receiveName[userMsg].finishEvaluate) {
@@ -274,7 +291,7 @@ sql.taskfinishEvaluate = function (req, res) {
       return
     }
     model.usertaskinfo.findOne({_id: req.session.userdata.usertaskinfo}, function (err, result1) {
-      const finishedMsg = result1.havePublished.findIndex(function (val) {
+      let finishedMsg = result1.havePublished.findIndex(function (val) {
         return String(val) === req.body.detail_id
       });
       if (finishedMsg === -1) {
@@ -288,24 +305,28 @@ sql.taskfinishEvaluate = function (req, res) {
           published: true,
           finishTime: new Date()
         }}, function (err, result) {
-        res.send({code: 0, data: '提交成功'});
+        err || res.send({code: 0, data: '提交成功'});
       })
     });
   })
 };
 
-// 后台api
+
+/*******************************
+*
+* 后台api
+*
+********************************/
 sql.admin = {};
 sql.admin.queryuserall = function (req, res) {
-  model.user.find()/*.sort({'_id': -1})*/.exec((err, result) => {
-    if (err) {
-      res.send({code: 1, err, data: '服务器错误'});
-      return
-    }
-    model.user.countDocuments(function (err, count) {
-      res.send({code: 0, data: result, count})
-    });
-  });
+  Promise.all([
+    model.user.find().skip((req.body.page - 1) * req.body.limit).limit(Number(req.body.limit)),
+    model.user.countDocuments()
+  ]).then((result) => {
+    res.send({code: 0, data: result[0], count: result[1]})
+  }).catch(() => {
+    res.send({code: 1, data: '服务器错误'})
+  })
 };
 sql.admin.resetuserused = function(req, res) {
   model.user.update({_id: req.body.user_id}, {$set: {used: req.body.used}}).then((result) => {
@@ -344,11 +365,17 @@ sql.admin.deluser = function (req, res) {
         res.send({code: 1, err, data: '服务器错误'});
         return
       }
-      res.send({code: 0, data: '删除成功'});
-      model.usertaskinfo.remove({_id: result.usertaskinfo}, function(){});
-      model.password.remove({_id: result.password}, function(){});
-      model.task.update({'receiveName.userinfo': req.body.id},
-        {$pull: {'receiveName': {userinfo: req.body.id}}}, { multi: true }, function(){});
+      Promise.all([
+        model.usertaskinfo.remove({_id: result.usertaskinfo}),
+        model.password.remove({_id: result.password}),
+        model.task.update({'receiveName.userinfo': req.body.id},
+          {$pull: {'receiveName': {userinfo: req.body.id}}}, { multi: true })
+      ]).then(() => {
+        res.send({code: 0, data: '删除成功'});
+      }).catch((err) => {
+        console.log('deluser', err);
+        res.send({code: 1, data: '服务器错误'});
+      })
     })
   });
 };
@@ -398,7 +425,7 @@ sql.admin.resetpassword = function (req, res) {
   });
 };
 sql.admin.addtask = function (req, res) {
-  const task = req.body;
+  let task = req.body;
   task.publishName = req.session.userdata._id;
   task.publishTime = new Date();
   model.task.create(task, function (err, result) {
@@ -407,7 +434,7 @@ sql.admin.addtask = function (req, res) {
       return
     }
     model.usertaskinfo.update({_id: req.session.userdata.usertaskinfo}, {$push: {havePublished: result._id}}, function () {});
-    res.send({code: 0, data: '发布成功'})
+    res.send({code: 0, data: '发布成功'});
   })
 };
 sql.admin.deltask = function (req, res) {
@@ -420,23 +447,24 @@ sql.admin.deltask = function (req, res) {
       res.send({code: 1, err, data: '服务器错误'});
       return
     }
-    const em = result.havePublished.filter((val) => {
+    let em = result.havePublished.filter((val) => {
       return String(val) === req.body.id;
     });
     if (em.length === 0 && req.session.userdata.level < 999) {
       res.send({code: 1, data: '不能删除别人的任务'});
       return
     }
-    model.task.remove({_id: req.body.id}, (err, result) => {
+    Promise.all([
+      model.task.remove({_id: req.body.id}),
+      model.usertaskinfo.update(
+        {$or:[{havePublished: req.body.id}, {publishUnderway: req.body.id}, {finished: req.body.id}]},
+        {$pull: {havePublished: req.body.id, publishUnderway: req.body.id, finished: req.body.id}},
+        { multi: true })
+    ]).then(() => {
       res.send({code: 0, data: '删除成功'});
-      model.usertaskinfo.update({
-          $or: [{havePublished: req.body.id}, {publishUnderway: req.body.id}, {finished: req.body.id}]
-        }, {$pull: {
-          havePublished: req.body.id,
-          publishUnderway: req.body.id,
-          finished: req.body.id
-        }}, { multi: true }/*更新多个*/, function () {});
-    })
+    }).catch(() => {
+      res.send({code: 1, data: '服务器错误'});
+    });
   });
 };
 

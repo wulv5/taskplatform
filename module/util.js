@@ -33,7 +33,7 @@ const crypto = require('crypto'),
       err && res.send({code: 1, msg: '上传失败'}) ||
       res.send({
         code: 0, data: {
-          src: `/static/layui/${req.file.filename}`,
+          src: `/layui/upload/${req.file.filename}`,
           title: req.file.filename // 可选
         }
       })

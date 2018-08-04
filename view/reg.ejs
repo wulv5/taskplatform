@@ -16,13 +16,23 @@
             border-radius: 7px;
             z-index: 2;
         }
+
+        .bg {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.8);
+            background-image: url('/layui/bg.png');
+            background-size: cover;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
-<div style="position: fixed;bottom: 0;right: 0;min-width: 100%;min-height: 100%;filter: blur(10px);background: rgba(255,255,255,0.8);z-index: -1">
-    <video style="position: fixed;bottom: 0;right: 0;min-width: 100%;min-height: 100%;"
-           muted="autoplay" autoplay="" loop="" src="/layui/home-bg.mp4"></video>
-</div>
+<div class="bg"></div>
 <div style="position: fixed;bottom: 0;right: 0;min-width: 100%;min-height: 100%;"></div>
 <form class="layui-form layui-form-pane layui-main" action="/reg" method="post">
     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;text-align: center;">
@@ -30,14 +40,14 @@
     </fieldset>
     <div class="layui-form-item">
         <label class="layui-form-label">网名</label>
-        <div class="layui-input-inline">
+        <div class="layui-input-block">
             <input type="text" name="username" required lay-verify="required" placeholder="请输入网名" autocomplete="off"
                    class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">选择部门</label>
-        <div class="layui-input-inline">
+        <div class="layui-input-block">
             <select name="department" lay-verify="required">
                 <option value="">请选择部门</option>
                 <optgroup label="梦想群">
@@ -49,33 +59,30 @@
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">工号</label>
-        <div class="layui-input-inline">
-            <input type="text" name="jobnum" required lay-verify="required" placeholder="请输入工号" autocomplete="off"
+        <div class="layui-input-block">
+            <input type="number" name="jobnum" required lay-verify="required|num" placeholder="请输入工号" autocomplete="off"
                    class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">密码</label>
-        <div class="layui-input-inline">
+        <div class="layui-input-block">
             <input type="password" name="password" required lay-verify="required|pass" placeholder="请输入密码" autocomplete="off"
                    class="layui-input">
         </div>
-        <div class="layui-form-mid layui-word-aux">密码必须6到12位，且不能出现空格</div>
+        <div class="layui-form-mid layui-word-aux"><span style="color: #000;">密码必须6到12位，且不能出现空格</span></div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">重复密码</label>
-        <div class="layui-input-inline">
+        <div class="layui-input-block">
             <input type="password" name="repassword" required lay-verify="required|pass" placeholder="请输入密码" autocomplete="off"
                    class="layui-input">
         </div>
-        <div class="layui-form-mid layui-word-aux">密码必须6到12位，且不能出现空格</div>
+        <!--<div class="layui-form-mid layui-word-aux"><span style="color: #000;">密码必须6到12位，且不能出现空格</span></div>-->
     </div>
-
-    <div class="layui-form-item">
-        <div class="layui-input-block">
-            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
-            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-        </div>
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-normal layui-btn-fluid" lay-submit lay-filter="formDemo">立即注册</button>
+        <a href="/" class="layui-btn layui-btn-primary layui-btn-fluid">返回首页</a>
     </div>
 </form>
 
@@ -107,6 +114,10 @@
         pass: [
           /^[\S]{6,12}$/
           ,'密码必须6到12位，且不能出现空格'
+        ],
+        num: [
+          /^\d+$/
+          ,'必须是数字'
         ]
       })
     })

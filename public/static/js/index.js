@@ -91,11 +91,11 @@ layui.use(['element', 'table', 'layer', 'util'], function () {
           return d.receiveNum
         }
       }
-      , {
-        field: 'receiveTime', title: '奖金(元)', width: 89, align: 'center', sort: true, templet: function (d) {
+      /*, {
+        field: 'receiveTime', title: '奖励', align: 'center', templet: function (d) {
           return d.finishBonus || ''
         }
-      }
+      }*/
       // ,{field: 'published', title: '是否发布', width: 90, align: 'center'}
       // , {field: 'publishHard', title: '难度', width: 64, sort: true, align: 'center'}
       , {float: 'right', width: 90, toolbar: '#barDemo', align: 'center'}
