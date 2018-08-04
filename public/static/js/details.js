@@ -132,7 +132,10 @@ layui.use(['element', 'laytpl', 'layer', 'util', 'rate', 'laydate', 'layedit', '
           });
           return false;
         });
-
+        layer.photos({
+          photos: '#layer-photos-demo'
+          ,anim: 5
+        });
       });
     }
   })

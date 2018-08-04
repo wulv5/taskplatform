@@ -360,22 +360,17 @@ sql.admin.deluser = function (req, res) {
       res.send({code: 1, data: '不能删除管理员账号'});
       return
     }
-    model.user.remove({_id: req.body.id}, (err, result1) => {
-      if (err) {
-        res.send({code: 1, err, data: '服务器错误'});
-        return
-      }
-      Promise.all([
-        model.usertaskinfo.remove({_id: result.usertaskinfo}),
-        model.password.remove({_id: result.password}),
-        model.task.update({'receiveName.userinfo': req.body.id},
-          {$pull: {'receiveName': {userinfo: req.body.id}}}, { multi: true })
-      ]).then(() => {
-        res.send({code: 0, data: '删除成功'});
-      }).catch((err) => {
-        console.log('deluser', err);
-        res.send({code: 1, data: '服务器错误'});
-      })
+    Promise.all([
+      model.user.remove({_id: req.body.id}),
+      model.usertaskinfo.remove({_id: result.usertaskinfo}),
+      model.password.remove({_id: result.password}),
+      model.task.update({'receiveName.userinfo': req.body.id},
+        {$pull: {'receiveName': {userinfo: req.body.id}}}, { multi: true })
+    ]).then(() => {
+      res.send({code: 0, data: '删除成功'});
+    }).catch((err) => {
+      console.log('deluser', err);
+      res.send({code: 1, data: '服务器错误'});
     })
   });
 };
@@ -438,10 +433,6 @@ sql.admin.addtask = function (req, res) {
   })
 };
 sql.admin.deltask = function (req, res) {
-  if (req.session.userdata.level < 10) {
-    res.send({code: 1, data: '没有权限'});
-    return
-  }
   model.usertaskinfo.findOne({_id: req.session.userdata.usertaskinfo}, function (err, result) {
     if (err) {
       res.send({code: 1, err, data: '服务器错误'});
