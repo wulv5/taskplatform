@@ -67,7 +67,7 @@ sql.login = function (req, res) {
     if (result.password.password === util.verifypassword(req.body.password)) {
       req.session.userdata = result;
       req.session.login = true;
-      res.send({code: 0, data: '登陆成功成功'});
+      res.send({code: 0, data: '登陆成功成功', result});
     } else {
       res.send({code: 1, data: '用户名或密码错误'})
     }

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "connect-mongo": "^2.0.1",
     "crypto": "^1.0.1",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
