@@ -365,7 +365,8 @@ sql.admin.deluser = function (req, res) {
       model.usertaskinfo.remove({_id: result.usertaskinfo}),
       model.password.remove({_id: result.password}),
       model.task.update({'receiveName.userinfo': req.body.id},
-        {$pull: {'receiveName': {userinfo: req.body.id}}}, { multi: true })
+        {$pull: {'receiveName': {userinfo: req.body.id}}}, {multi: true}),
+      model.task.remove({publishName: req.body.id})
     ]).then(() => {
       res.send({code: 0, data: '删除成功'});
     }).catch((err) => {
@@ -422,7 +423,6 @@ sql.admin.resetpassword = function (req, res) {
 sql.admin.addtask = function (req, res) {
   let task = req.body;
   task.publishName = req.session.userdata._id;
-  task.publishTime = new Date();
   model.task.create(task, function (err, result) {
     if (err) {
       res.send({code: 1, data: '服务器错误', err});

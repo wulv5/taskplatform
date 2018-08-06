@@ -12,7 +12,7 @@ const userSchema = new Schema({
     jobnum: {type: Number, required: true}
   }
   ,usertaskinfo: {type: Schema.Types.ObjectId, required: true, ref: 'usertaskinfo'}
-}, {createdAt: 'created', updatedAt: 'updated'});
+});
 const passwordSchema = new Schema({
   password: {type: String, required: true}
 });
@@ -23,7 +23,6 @@ const usertaskinfoSchema = new Schema({
 });
 const taskSchema = new Schema({
   publishName: {type: Schema.Types.ObjectId, required: true, ref: 'user'} // 发布人
-  ,publishTime: {type: String, default: new Date(), required: true} // 发布时间
   ,receiveName: {type: [{
       userinfo: {type: Schema.Types.ObjectId, required: false, ref: 'user'}
       ,finished: {type: Boolean, default: false, required: false}
@@ -44,8 +43,12 @@ const taskSchema = new Schema({
   ,finishTime: {type: String, required: false} // 完成日期
   ,finishEvaluate: {type: String, required: false} // 完成评价
   ,finishBonus: {type: String, required: false} // 报酬 奖金
+}, {
+  timestamps: {
+    createdAt: 'publishTime' // 发布时间
+  }
 });
-
+/*, updatedAt: 'updated'*/
 
 const model = {
   user: mongoose.model('user', userSchema),
