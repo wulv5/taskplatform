@@ -186,8 +186,7 @@ sql.queryfinished = function (req, res) {
       path: 'finished', options: {
         sort: {_id: -1},
         skip: (req.body.page - 1) * req.body.limit,
-        limit: Number(req.body.limit),
-        count: true
+        limit: Number(req.body.limit)
       },
       populate: {
         path: 'publishName receiveName',
