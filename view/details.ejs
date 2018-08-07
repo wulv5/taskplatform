@@ -35,7 +35,7 @@
             <!--<div style="padding-top: 15px;">接取时间 (从第一个人开始算): {{ layui.util.toDateString(d.list.receiveTime) }}</div>-->
             <div style="padding-top: 15px;" class="layui-row">
                 {{# layui.each(d.list.receiveName, function(index, item){ }}
-                <div class="layui-col-md2">{{index+1}}. 网名: {{ item.userinfo.workinfo && item.userinfo.workinfo.department || '' }} -  {{ item.userinfo.username }}</div>
+                <div class="layui-col-md2">{{index+1}}.  {{ item.userinfo.workinfo && item.userinfo.workinfo.department || '' }} -  {{ item.userinfo.username }}</div>
                 {{# }) }}
             </div>
             <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">

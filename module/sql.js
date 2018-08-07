@@ -76,7 +76,7 @@ sql.login = function (req, res) {
   });
 };
 sql.querytaskbyid = function (req, res) {
-  model.task.findOne({_id: req.params.id}).populate('publishName receiveName.userinfo', 'username workinfo').exec(function (err, result) {
+  model.task.findById(req.params.id).populate('publishName receiveName.userinfo', 'username workinfo').exec(function (err, result) {
     if (req.session.login) {
       model.usertaskinfo.findOne({_id: req.session.userdata.usertaskinfo}).exec((err, result1) => {
         res.send({
@@ -139,8 +139,11 @@ sql.querytaskreceived = function (req, res) {
 *******************************/
 sql.queryhavePublished = function (req, res) {
   let id = req.body._id || req.session.userdata.usertaskinfo;
+  if (!id) {
+    return res.send({code: 1, data: '参数错误'});
+  }
   Promise.all([
-    model.usertaskinfo.findOne({_id: id}).populate({
+    model.usertaskinfo.findById(id).populate({
       path: 'havePublished', options: {
         sort: {_id: -1},
         skip: (req.body.page - 1) * req.body.limit,
@@ -160,42 +163,42 @@ sql.queryhavePublished = function (req, res) {
 };
 sql.querypublishUnderway = function (req, res) {
   let id = req.body._id || req.session.userdata.usertaskinfo;
-  Promise.all([
-    model.usertaskinfo.findOne({_id: id}).populate({
-      path: 'publishUnderway', options: {
-        sort: {_id: -1},
-        skip: (req.body.page - 1) * req.body.limit,
-        limit: Number(req.body.limit)
-      },
-      populate: {
-        path: 'publishName receiveName',
-        select: 'username'
-      }
-    }),
-    model.task.countDocuments({'receiveName.userinfo': req.session.userdata._id, finished: false})
-  ]).then((result) => {
-    res.send({code: 0, data: result[0].publishUnderway, count: result[1]});
+  if (!id) {
+    return res.send({code: 1, data: '参数错误'});
+  }
+  model.usertaskinfo.findById(id).populate({
+    path: 'publishUnderway', options: {
+      sort: {_id: -1},
+      skip: (req.body.page - 1) * req.body.limit,
+      limit: Number(req.body.limit)
+    },
+    populate: {
+      path: 'publishName receiveName',
+      select: 'username'
+    }
+  }).then((result) => {
+    res.send({code: 0, data: result.publishUnderway, count: result.populated('publishUnderway').length});
   }).catch((err) => {
     res.send({code: 1, err, data: '服务器错误'});
   });
 };
 sql.queryfinished = function (req, res) {
   let id = req.body._id || req.session.userdata.usertaskinfo;
-  Promise.all([
-    model.usertaskinfo.findOne({_id: id}).populate({
-      path: 'finished', options: {
-        sort: {_id: -1},
-        skip: (req.body.page - 1) * req.body.limit,
-        limit: Number(req.body.limit)
-      },
-      populate: {
-        path: 'publishName receiveName',
-        select: 'username'
-      }
-    }),
-    model.task.countDocuments({'receiveName.userinfo': req.session.userdata._id, finished: true})
-  ]).then((result) => {
-    res.send({code: 0, data: result[0].finished, count: result[1]});
+  if (!id) {
+    return res.send({code: 1, data: '参数错误'});
+  }
+  model.usertaskinfo.findById(id).populate({
+    path: 'finished', options: {
+      sort: {_id: -1},
+      skip: (req.body.page - 1) * req.body.limit,
+      limit: Number(req.body.limit)
+    },
+    populate: {
+      path: 'publishName receiveName',
+      select: 'username'
+    }
+  }).then((result) => {
+    res.send({code: 0, data: result.finished, count: result.populated('finished').length});
   }).catch((err) => {
     res.send({code: 1, err, data: '服务器错误'});
   });
@@ -207,7 +210,10 @@ sql.queryfinished = function (req, res) {
 *
 ********************************/
 sql.taskreceive = function (req, res) {
-  model.task.findOne({_id: req.body.id}, function (err, result) {
+  if (!req.body.id) {
+    return res.send({code: 1, data: '参数错误'});
+  }
+  model.task.findById(req.body.id, function (err, result) {
     if (err) {
       res.send({code: 1, data: '服务器错误'});
       return
@@ -227,7 +233,7 @@ sql.taskreceive = function (req, res) {
       res.send({code: 1, data: '不能重复接取'});
       return
     }
-    model.usertaskinfo.findOne({_id: req.session.userdata.usertaskinfo}, function (err, result1) {
+    model.usertaskinfo.findById(req.session.userdata.usertaskinfo, function (err, result1) {
       let em = result1.havePublished.filter((val) => {
         return String(val) === req.body.id;
       }) || 1;
@@ -253,7 +259,10 @@ sql.taskreceive = function (req, res) {
   })
 };
 sql.taskfinished = function (req, res) {
-  model.task.findOne({_id: req.body.id}, function (err, result) {
+  if (!req.body.id) {
+    return res.send({code: 1, data: '参数错误'});
+  }
+  model.task.findById(req.body.id, function (err, result) {
     if (err) {
       res.send({code: 1, data: '服务器错误'});
       return
@@ -286,7 +295,10 @@ sql.taskfinished = function (req, res) {
   })
 };
 sql.taskfinishEvaluate = function (req, res) {
-  model.task.findOne({_id: req.body.detail_id}, function (err, result) {
+  if (!req.body.detail_id) {
+    return res.send({code: 1, data: '参数错误'});
+  }
+  model.task.findById(req.body.detail_id, function (err, result) {
     if (err) {
       res.send({code: 1, data: '服务器错误'});
       return
