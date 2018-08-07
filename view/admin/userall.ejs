@@ -53,7 +53,11 @@
       if(obj.event === 'detail'){
         layer.msg('ID：'+ data._id + ' 的查看操作');
       } else if(obj.event === 'del'){
+        let f = false;
         layer.confirm('真的删除么', function(index){
+          if (f) {
+            return
+          }
           layui.$.ajax({
             url: '/admin/deluser',
             method: 'post',
@@ -62,7 +66,8 @@
             },
             success: function (res) {
               layer.close(index);
-              layer.alert(res.data)
+              layer.alert(res.data);
+              f = true;
               if (res.code === 0) {
                 obj.del();
               }

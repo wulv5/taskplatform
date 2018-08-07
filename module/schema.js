@@ -41,7 +41,7 @@ const taskSchema = new Schema({
   ,finished: {type: Boolean, default: false, required: false} // 是否完成( 总的 )
   // ,finishedMsg: {type: String, required: false} // 完成信息
   ,finishTime: {type: String, required: false} // 完成日期
-  ,finishEvaluate: {type: String, required: false} // 完成评价
+  // ,finishEvaluate: {type: String, required: false} // 完成评价
   ,finishBonus: {type: String, required: false} // 报酬 奖金
 }, {
   timestamps: {
