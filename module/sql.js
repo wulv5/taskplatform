@@ -61,8 +61,7 @@ sql.reg = function (req, res) {
 sql.login = function (req, res) {
   sql.queryuserpass(req.body.username).then(({result}) => {
     if (!result.used) {
-      res.send({code: 1, data: '请联系管理员激活帐户'});
-      return
+      return res.send({code: 1, data: '请联系管理员激活帐户'});
     }
     if (result.password.password === util.verifypassword(req.body.password)) {
       req.session.userdata = result;
@@ -355,9 +354,15 @@ sql.admin.resetuserused = function(req, res) {
   })
 };
 sql.admin.deluser = function (req, res) {
-  model.user.findOne({_id: req.body.id}, function (err, result) {
+  if (!req.body.id) {
+    return res.send({code: 1, data: '参数错误'})
+  }
+  model.user.findById(req.body.id, function (err, result) {
     if (err) {
       return res.send({code: 1, err, data: '服务器错误'});
+    }
+    if (!result) {
+      return res.send({code: 1, err, data: '没有该用户'});
     }
     if (req.body.id === req.session.userdata._id) {
       return res.send({code: 1, data: '不能删除自己'});
@@ -441,10 +446,9 @@ sql.admin.addtask = function (req, res) {
   })
 };
 sql.admin.deltask = function (req, res) {
-  model.usertaskinfo.findOne({_id: req.session.userdata.usertaskinfo}, function (err, result) {
+  model.usertaskinfo.findById(req.session.userdata.usertaskinfo, function (err, result) {
     if (err) {
-      res.send({code: 1, err, data: '服务器错误'});
-      return
+      return res.send({code: 1, err, data: '服务器错误'});
     }
     let em = result.havePublished.filter((val) => {
       return String(val) === req.body.id;

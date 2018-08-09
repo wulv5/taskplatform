@@ -3,6 +3,7 @@ const express = require('express'),
   mongoose = require('mongoose'),
   session = require('express-session'),
   MongoStore  = require("connect-mongo")(session),
+  helmet = require('helmet'),
   path = require('path'),
   conf = require('./conf');
   app = express();
@@ -11,12 +12,13 @@ mongoose.connect(conf.dburl, { useNewUrlParser: true });
 
 mongoose.connection.on('error', e => console.log('连接数据库失败'));
 mongoose.connection.once('open', e => console.log('连接数据库成功'));
+app.use(helmet());
 app.use(session({
   secret: 'emmmm emmmm',
   rolling: true,
-  resave: true,
-  saveUninitialized: true,
-  cookie: {maxAge: 1000 * 60 * 60 * 24, httpOnly: false},
+  resave: false,
+  saveUninitialized: false,
+  cookie: {maxAge: 1000 * 60 * 60 * 24, httpOnly: true},
   store: new MongoStore({
     url: conf.sessiondburl
   })

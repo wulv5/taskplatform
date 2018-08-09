@@ -82,20 +82,26 @@
         {field: 'publishName', title: '发布人', width: 115, align: 'center', templet: function (d) {
             return d.publishName.username
           }}
-        ,{field: 'publishTitle', title: '主题', align: 'center'}
+        ,{field: 'publishTitle', title: '主题', width: 441, align: 'center'}
         ,{field: 'publishTime', title: '发布时间', width: 160, align: 'center', sort: true, templet: function (d) {
             return layui.util.toDateString(d.publishTime)
           }}
         /*,{field: 'receiveName', title: '接取人', width: 115, align: 'center', templet: function (d) {
             return d.receiveName && d.receiveName.username || '暂无'
-          }}*/
+          }}
         ,{field: 'receiveTime', title: '接取日期', width: 160, align: 'center', sort: true, templet: function (d) {
             return d.receiveTime && layui.util.toDateString(d.receiveTime) || '暂无'
           }}
-          /*,{field: 'finishTime', title: '完成日期', width: 160, align: 'center', sort: true, templet: function (d) {
+          ,{field: 'finishTime', title: '完成日期', width: 160, align: 'center', sort: true, templet: function (d) {
             return d.finishTime && layui.util.toDateString(d.finishTime) || '暂无'
           }}*/
         ,{field: 'publishFinishTime', title: '截止日期', width: 160, align: 'center'}
+        ,{field: 'receiveName', title: '已接取人数',  width: 115, align: 'center', templet: function (d) {
+            return d.receiveName.length
+          }}
+        ,{field: 'receiveNum', title: '最高接取人数', width: 115, align: 'center', templet: function (d) {
+            return d.receiveNum
+          }}
         ,{field: 'finished', title: '是否完成', width: 100, align: 'center', sort: true, templet: function (d) {
             if(d.finished) {
               return '<span style="color: red">已完成</span>'

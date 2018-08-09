@@ -64,7 +64,7 @@ layui.use(['element', 'table', 'layer', 'util'], function () {
           return d.publishName.username
         }
       }
-      , {field: 'publishTitle', title: '主题', align: 'center'}
+      , {field: 'publishTitle', title: '主题', width: 441, align: 'center'}
       /*, {
         field: 'publishTime', title: '发布时间', width: 160, align: 'center', sort: true, templet: function (d) {
           return layui.util.toDateString(d.publishTime)
